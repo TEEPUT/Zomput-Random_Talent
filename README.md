@@ -1,6 +1,8 @@
 # Zomput-Random_Talent
 
-![Zomput Random Talent](preview.png)
+![Zomput Random Talent](docs/media/workshop-cover.jpg)
+
+대표 이미지는 모드 주제를 표현한 AI 생성 일러스트이며 실제 게임 화면이 아닙니다. [원본 및 생성 프롬프트](docs/ARTWORK.md)
 
 Project Zomboid **Build 42.21 / 42.21.0**에서 직업과 특성을 무작위로만 선택하게 하는 모드입니다. 한국어·영어를 지원합니다.
 
