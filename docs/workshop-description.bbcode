@@ -1,0 +1,32 @@
+[h1]ZOMPUT · RANDOM TALENT[/h1]
+[b]직업도 특성도, 주어진 기회 안에서 무작위로.[/b]
+Build 42.21 / 42.21.0 · 한국어 / English · 싱글 / 멀티
+
+[h2]주요 기능[/h2]
+[list]
+[*]직업과 특성을 직접 고르지 못하고 무작위로만 선택합니다.
+[*]샌드박스에서 총 기회를 1~100회로 설정합니다. 기본 5회이며 첫 무작위도 포함됩니다.
+[*]무작위 버튼 옆에 남은 기회를 표시하고, 소진하면 버튼을 막습니다.
+[*]특성 포인트가 부족하거나 남아도 생성할 수 있습니다.
+[*]수동 추가·삭제, 초기화, 프리셋 불러오기와 게임패드 우회를 차단합니다.
+[*]외형 화면에서 돌아와도 기회가 유지됩니다. 새 캐릭터는 새 기회를 받습니다.
+[/list]
+
+[h2]사용 방법[/h2]
+샌드박스의 [b]Zomput 무작위 특성 → 무작위 선택 기회[/b]를 설정하고, 직업·특성 화면에서 무작위를 누르세요. 다음 단계로 진행하려면 최소 한 번 추첨해야 합니다. 기본 게임의 특성 상호 배제와 서버 수면 설정을 따릅니다.
+
+[h2]설치 및 범위[/h2]
+서버와 모든 클라이언트에서 같은 버전을 활성화하세요. 기존 캐릭터는 변경하지 않습니다. 현재 캐릭터 생성 과정의 제한이며, 게임 종료·새 연결까지 유지되는 계정별 영구 제한이나 변조 클라이언트 차단 기능은 아닙니다. 다른 캐릭터 생성 화면 모드와는 충돌할 수 있습니다.
+
+오류가 난 추첨도 기회를 소모하며, 정상 추첨에 성공하기 전에는 진행할 수 없습니다. 포인트 보정을 생략하므로 기본 게임 무작위와 추첨 분포가 다릅니다.
+
+[h2]검증[/h2]
+Lua 5.1 자동 테스트 13개 및 42.21 원본 특성 적용 함수로 100회 추첨 검사를 통과했습니다. 실제 42.21.0 전용 서버에서 모드 로드, 샌드박스 옵션 등록·기본값 전달 및 Kahlua 문법 검사를 통과했습니다. 실제 게임 화면과 두 클라이언트 접속 검증은 미완료입니다.
+
+[h2]ENGLISH[/h2]
+Random-only profession and traits. Configure 1–100 total attempts in sandbox options (default 5). First roll counts; remaining attempts appear beside Random. The button locks at zero. Negative or surplus points do not block creation. At least one successful roll is required.
+
+Manual editing, reset and preset loading are blocked. Going back from appearance preserves attempts. Install on the server and each client. This is a creation-session limit, not a persistent account limit or anti-cheat. Existing characters are unchanged. GUI and real multiplayer session testing remain pending.
+
+[b]Mod ID:[/b] ZomputRandomTalent
+[url=https://github.com/TEEPUT/Zomput-Random_Talent]소스 코드 · 사용 안내 · 테스트 기록[/url]

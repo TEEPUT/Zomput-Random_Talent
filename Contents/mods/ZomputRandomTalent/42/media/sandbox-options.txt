@@ -1,0 +1,10 @@
+VERSION = 1,
+option ZomputRandomTalent.RollLimit
+{
+    type = integer,
+    min = 1,
+    max = 100,
+    default = 5,
+    page = ZomputRandomTalent,
+    translation = ZRT_RollLimit,
+}

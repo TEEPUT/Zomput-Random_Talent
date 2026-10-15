@@ -1,0 +1,5 @@
+{
+    "Sandbox_ZomputRandomTalent": "Zomput 무작위 특성",
+    "Sandbox_ZRT_RollLimit": "무작위 선택 기회",
+    "Sandbox_ZRT_RollLimit_tooltip": "캐릭터 생성당 총 무작위 횟수입니다. 첫 선택도 포함합니다. 1~100회, 기본 5회."
+}

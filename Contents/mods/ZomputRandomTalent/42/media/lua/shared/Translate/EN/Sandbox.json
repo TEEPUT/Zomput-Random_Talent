@@ -1,0 +1,5 @@
+{
+    "Sandbox_ZomputRandomTalent": "Zomput Random Talent",
+    "Sandbox_ZRT_RollLimit": "Randomization attempts",
+    "Sandbox_ZRT_RollLimit_tooltip": "Total rolls per character creation. First roll is included. Range: 1-100; default: 5."
+}

@@ -1,0 +1,6 @@
+version=1
+id=3820144158
+title=Zomput-Random_Talent
+description=Build 42.21 random-only profession and traits. Sandbox roll budget, remaining attempts beside Random, point-balance-independent creation. Korean and English. Install on server and clients.
+tags=Build 42;Traits;Multiplayer
+visibility=public

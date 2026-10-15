@@ -1,0 +1,6 @@
+{
+    "IGUI_ZRT_Remaining": "Rolls left: %1 / %2",
+    "IGUI_ZRT_Hint": "Randomize profession and traits. Point balance does not block creation.",
+    "IGUI_ZRT_Required": "Randomize at least once before continuing.",
+    "IGUI_ZRT_Failed": "Randomization failed. Check conflicting character-creation mods. This attempt was consumed."
+}
