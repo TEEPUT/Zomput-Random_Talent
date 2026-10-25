@@ -20,10 +20,16 @@ end
 CharacterCreationProfession = {}
 local S = CharacterCreationProfession
 function S:resetBuild() self:removeAllTraits(); self.listboxProf.selected = 1 end
-function S:removeAllTraits() self.chosen = {}; self.points = 0 end
+function S:removeAllTraits() self.chosen = {}; self.listboxTraitSelected.items = {}; self.points = 0 end
 function S:onSelectProf(value) self.profession = value end
-function S:getSelectedProf() return self.listboxProf.items[self.listboxProf.selected] end
-function S:addTrait(value) self.chosen[#self.chosen + 1] = value; self.points = self.points - value.cost end
+function S:getSelectedProf()
+    local entry=self.listboxProf.items[self.listboxProf.selected]
+    return entry.item or entry
+end
+function S:addTrait(value)
+    self.chosen[#self.chosen + 1] = value; self.points = self.points - value.cost
+    self.listboxTraitSelected.items[#self.listboxTraitSelected.items+1] = {item=value}
+end
 function S:addGoodTrait() self:addTrait(self.listboxTrait.items[self.listboxTrait.selected]) end
 function S:addBadTrait() self:addTrait(self.listboxBadTrait.items[self.listboxBadTrait.selected]) end
 function S:removeTrait() self.removed = true end
@@ -39,12 +45,18 @@ function CoopCharacterCreationProfession:onOptionMouseDown(button)
     if button.internal == 'NEXT' then self.coopNext = true
     else S.onOptionMouseDown(self, button) end
 end
+local traits = {}
+CharacterTraitDefinition = {getCharacterTraitDefinition=function(id) return traits[id] end}
+local function trait(id, cost)
+    local t={cost=cost,getType=function() return id end,isFree=function() return false end}
+    traits[id]=t; return t
+end
 function makeScreen(class)
     return setmetatable({randomButton = button(), playButton = button(), resetButton = button(),
         addTraitBtn = button(), addBadTraitBtn = button(), removeTraitBtn = button(),
         presetPanel = {setVisible = function(self, value) self.visible = value end},
         listboxProf = {items = {'A', 'B', 'C'}, selected = 1},
-        listboxTrait = {items = {{cost = 8}, {cost = 4}}},
-        listboxBadTrait = {items = {{cost = -2}}}, chosen = {}, points = 0,
+        listboxTrait = {items = {trait('good1',8), trait('good2',4)}},
+        listboxBadTrait = {items = {trait('bad1',-2)}}, listboxTraitSelected={items={}}, chosen = {}, points = 0,
         drawTextRight = function(self, text) self.counter = text end}, {__index = class or S})
 end

@@ -70,6 +70,95 @@ class RandomTalentTests(unittest.TestCase):
             S:setVisible(true); assert(Z.session(S).used == 0 and not Z.session(S).ready)
         ''')
 
+    def test_cancel_respawn_and_reenter_preserves_exhaustion_and_last_build(self):
+        self.check('''
+            ISPostDeathUI = {instance={[0]={}}}
+            CoopCharacterCreation = {instance={playerIndex=0,charCreationProfession=S}}
+            for i=1,5 do assert(Z.roll(S)) end
+            local state = Z.session(S)
+            local types = {}; for i,t in ipairs(S.chosen) do types[i]=t:getType() end
+            local profession = S.profession
+            -- Vanilla cancel/reopen creates BOTH a new panel and a descriptor.
+            local reopened = makeScreen(CoopCharacterCreationProfession)
+            MainScreen.instance.desc = {}
+            CoopCharacterCreation.instance = {playerIndex=0,charCreationProfession=reopened}
+            reopened:setVisible(true)
+            assert(Z.session(reopened)==state and state.used==5 and state.ready)
+            assert(not Z.roll(reopened) and reopened.profession==profession)
+            assert(#reopened.chosen==#types)
+            for i,t in ipairs(reopened.chosen) do assert(t:getType()==types[i]) end
+            reopened:render(); assert(not reopened.randomButton.enabled and reopened.playButton.enabled)
+            reopened:onOptionMouseDown({internal='NEXT'}); assert(reopened.coopNext)
+        ''')
+
+    def test_repeated_cancel_does_not_replenish_partial_budget(self):
+        self.check('''
+            ISPostDeathUI = {instance={[0]={}}}
+            CoopCharacterCreation = {instance={playerIndex=0,charCreationProfession=S}}
+            assert(Z.roll(S)); assert(Z.roll(S))
+            local state=Z.session(S)
+            for i=1,8 do
+                local reopened=makeScreen(CoopCharacterCreationProfession)
+                MainScreen.instance.desc={}
+                CoopCharacterCreation.instance={playerIndex=0,charCreationProfession=reopened}
+                reopened:setVisible(true)
+                assert(Z.session(reopened)==state and state.used==2 and state.limit==5)
+                S=reopened
+            end
+            for i=1,3 do assert(Z.roll(S)) end
+            assert(not Z.roll(S))
+        ''')
+
+    def test_next_death_and_other_split_screen_player_get_separate_budgets(self):
+        self.check('''
+            ISPostDeathUI = {instance={[0]={},[1]={}}}
+            CoopCharacterCreation = {instance={playerIndex=0,charCreationProfession=S}}
+            assert(Z.roll(S)); local first=Z.session(S)
+            local other=makeScreen(CoopCharacterCreationProfession)
+            MainScreen.instance.desc={}
+            CoopCharacterCreation.instance={playerIndex=1,charCreationProfession=other}
+            other:setVisible(true); assert(Z.session(other).used==0)
+            ISPostDeathUI.instance[0]={} -- a new death, after accepting and playing
+            local nextLife=makeScreen(CoopCharacterCreationProfession)
+            MainScreen.instance.desc={}
+            CoopCharacterCreation.instance={playerIndex=0,charCreationProfession=nextLife}
+            nextLife:setVisible(true)
+            assert(Z.session(nextLife)~=first and Z.session(nextLife).used==0)
+        ''')
+
+    def test_failed_restore_does_not_grant_rolls_or_allow_next(self):
+        self.check('''
+            ISPostDeathUI = {instance={[0]={}}}
+            CoopCharacterCreation = {instance={playerIndex=0,charCreationProfession=S}}
+            for i=1,5 do assert(Z.roll(S)) end
+            local reopened=makeScreen(CoopCharacterCreationProfession)
+            CharacterTraitDefinition.getCharacterTraitDefinition=function() return nil end
+            MainScreen.instance.desc={}
+            CoopCharacterCreation.instance={playerIndex=0,charCreationProfession=reopened}
+            reopened:setVisible(true)
+            local state=Z.session(reopened)
+            assert(state.used==5 and state.failed and not state.ready)
+            assert(not Z.roll(reopened))
+            reopened:onOptionMouseDown({internal='NEXT'}); assert(not reopened.coopNext)
+        ''')
+
+    def test_restore_matches_profession_type_when_new_screen_order_changes(self):
+        self.check('''
+            ISPostDeathUI={instance={[0]={}}}
+            CoopCharacterCreation={instance={playerIndex=0,charCreationProfession=S}}
+            local a={getType=function() return 'A' end}
+            local b={getType=function() return 'B' end}
+            S.listboxProf.items={{item=a},{item=b}}
+            assert(Z.roll(S)); local expected=S.profession:getType()
+            local reopened=makeScreen(CoopCharacterCreationProfession)
+            reopened.listboxProf.items={{item=b},{item=a}}
+            MainScreen.instance.desc={}
+            CoopCharacterCreation.instance={playerIndex=0,charCreationProfession=reopened}
+            reopened:setVisible(true)
+            assert(reopened.profession:getType()==expected)
+            assert(Z.session(reopened).used==1 and Z.session(reopened).ready)
+        ''')
+
     def test_reused_screen_synchronizes_new_descriptor_profession(self):
         self.check('''
             local profession = {getType=function() return 'ProfessionType' end}

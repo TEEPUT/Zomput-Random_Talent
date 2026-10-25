@@ -4,6 +4,20 @@ local ZRT = ZomputRandomTalent
 local Screen = CharacterCreationProfession
 require "OptionScreens/CoopCharacterCreationProfession"
 ZRT.sessions = ZRT.sessions or setmetatable({}, {__mode = "k"})
+local internal, restore
+
+local function sessionKey(screen)
+    local coop = CoopCharacterCreation and CoopCharacterCreation.instance
+    local deaths = ISPostDeathUI and ISPostDeathUI.instance
+    -- Cancel destroys the creation panel and descriptor, but the same death UI
+    -- survives until a replacement character is accepted. Each later death has
+    -- a different UI, and split-screen players have separate entries.
+    if coop and coop.charCreationProfession == screen and deaths then
+        local death = deaths[coop.playerIndex]
+        if death then return death end
+    end
+    return MainScreen.instance.desc
+end
 
 function ZRT.limit()
     local value = SandboxVars and SandboxVars.ZomputRandomTalent and SandboxVars.ZomputRandomTalent.RollLimit
@@ -12,24 +26,60 @@ function ZRT.limit()
 end
 
 function ZRT.session(screen)
-    -- Returning from appearance/back does not grant more rolls. A new character
-    -- descriptor gets a new budget, including a replacement after death.
-    local key = MainScreen.instance.desc
+    local key = sessionKey(screen)
     local state = ZRT.sessions[key]
     if not state then
         state = {used = 0, limit = ZRT.limit(), ready = false}
         ZRT.sessions[key] = state
     end
     screen.zrtSession = state
+    if state.ready and (state.screen ~= screen or state.desc ~= MainScreen.instance.desc) then
+        state.ready = false
+        local ok = restore(screen, state)
+        state.ready, state.failed = ok, not ok
+    end
     return state
 end
 
-local function internal(screen, fn, ...)
+internal = function(screen, fn, ...)
     local previous = screen.zrtInternal
     screen.zrtInternal = true
     local ok, result = pcall(fn, screen, ...)
     screen.zrtInternal = previous
     return ok, result
+end
+
+local function synchronizeProfession(screen)
+    local desc = MainScreen.instance.desc
+    if desc.setProfessionSkills then
+        desc:setProfessionSkills(screen.profession)
+        desc:setCharacterProfession(screen.profession:getType())
+    end
+end
+
+restore = function(screen, state)
+    return internal(screen, function(self)
+        self:resetBuild()
+        local index = state.professionIndex
+        if state.professionType then
+            index = nil
+            for i, entry in ipairs(self.listboxProf.items) do
+                if entry.item:getType() == state.professionType then index = i; break end
+            end
+        end
+        if not index or not self.listboxProf.items[index] then error("Saved profession unavailable") end
+        self.listboxProf.selected = index
+        self:onSelectProf(self:getSelectedProf())
+        self:removeAllTraits()
+        for _, traitType in ipairs(state.traits) do
+            local trait = CharacterTraitDefinition.getCharacterTraitDefinition(traitType)
+            if not trait then error("Saved trait unavailable") end
+            self:addTrait(trait)
+        end
+        self:checkXPBoost()
+        synchronizeProfession(self)
+        state.screen, state.desc = self, MainScreen.instance.desc
+    end)
 end
 
 function ZRT.roll(screen)
@@ -59,12 +109,14 @@ function ZRT.roll(screen)
         self:checkXPBoost()
         -- The UI may be reused with a replacement descriptor. Vanilla skips
         -- onSelectProf's body when the selected profession has not changed.
-        local desc = MainScreen.instance.desc
-        if desc.setProfessionSkills then
-            desc:setProfessionSkills(self.profession)
-            desc:setCharacterProfession(self.profession:getType())
-        end
+        synchronizeProfession(self)
         state.professionIndex = self.listboxProf.selected
+        state.professionType = self.profession.getType and self.profession:getType() or nil
+        state.traits = {}
+        for _, entry in ipairs(self.listboxTraitSelected.items) do
+            if not entry.item:isFree() then state.traits[#state.traits + 1] = entry.item:getType() end
+        end
+        state.screen, state.desc = self, MainScreen.instance.desc
     end)
     state.ready = ok
     state.failed = not ok

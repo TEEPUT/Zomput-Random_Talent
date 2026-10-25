@@ -17,7 +17,7 @@ Project Zomboid **Build 42.21 / 42.21.0**에서 직업과 특성을 무작위로
 3. 직업·특성 화면에서 **무작위**를 누릅니다. 직업과 특성이 함께 바뀌며 버튼 옆에 남은 횟수가 표시됩니다.
 4. 최소 한 번 실행한 뒤 다음 화면으로 진행할 수 있습니다. 횟수가 0이면 무작위 버튼이 비활성화됩니다.
 
-첫 무작위도 횟수에 포함됩니다. 초기화와 저장된 빌드 불러오기는 사용할 수 없으며, 직접 직업 선택·특성 추가·삭제는 마우스와 게임패드에서 모두 차단합니다. 외형 화면에 갔다가 돌아와도 횟수가 유지되고, 새 캐릭터를 만들 때 새 횟수가 부여됩니다.
+첫 무작위도 횟수에 포함됩니다. 초기화와 저장된 빌드 불러오기는 사용할 수 없으며, 직접 직업 선택·특성 추가·삭제는 마우스와 게임패드에서 모두 차단합니다. 외형 화면 왕복뿐 아니라 사망 후 생성 화면을 취소하고 다시 열어도 사용 횟수와 마지막 직업·특성이 유지됩니다. 실제로 새 캐릭터를 생성하고 플레이한 뒤 다시 사망하면 새 기회가 부여됩니다. 분할 화면의 플레이어별 기회는 분리됩니다.
 
 포인트가 음수이거나 남아도 캐릭터를 생성할 수 있습니다. 원래 포인트 숫자는 바꾸지 않습니다. 기본 게임의 무작위는 포인트를 0~3에 맞추려 최대 1,000회 보정하지만 항상 보장되지는 않습니다. 이 모드는 점수 보정 대신 직업과 긍정·부정 특성 후보를 직접 추첨하며 기본 게임의 특성 적용·상호 배제 검사를 사용합니다. 따라서 기본 무작위와 추첨 분포가 다릅니다.
 
@@ -35,4 +35,4 @@ Project Zomboid **Build 42.21 / 42.21.0**에서 직업과 특성을 무작위로
 
 Random-only profession and traits for Build 42.21. Set **Zomput Random Talent → Randomization attempts** in sandbox options (1–100, default 5). The first roll counts. Remaining attempts appear beside Random; the button is disabled at zero. Roll at least once before continuing. Negative or surplus trait points do not prevent creation.
 
-Manual changes, reset and preset loading are blocked, including controller paths. Going back from appearance preserves the budget. This is a character-creation UI rule, not a persistent account limit or protection against modified clients. Install on the server and every client. Existing characters are unchanged.
+Manual changes, reset and preset loading are blocked, including controller paths. Going back from appearance or cancelling and reopening the same post-death creation preserves the budget and the last rolled build. A later death gets a fresh budget; split-screen players are independent. This is a character-creation UI rule, not a persistent account limit or protection against modified clients. Install on the server and every client. Existing characters are unchanged.
